@@ -6,7 +6,7 @@ logger = logging.getLogger("s3Integration")
 
 class S3Dao:
 
-  def S3Dao(self):
+  def __init__(self):
     try:
       self.s3 = boto3.resource('s3')
     except:
@@ -66,7 +66,7 @@ class S3Dao:
     pass
 
   def removeObject(self, key):
-    removeObject(self.bucket, key)
+    self.removeObject(self.bucket, key)
 
   def removeObject(self, bucket_name, key):
     try:
