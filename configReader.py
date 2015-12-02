@@ -19,6 +19,9 @@ class ConfigReader:
     if self.checkSection(section):
       return self.config.options(section)
     raise Exception("Section " + section + " does not exist")
+  
+  def getSections(self):
+    return self.config.sections()
       
   def checkSection(self, section):
     return self.config.has_section(section)
@@ -35,6 +38,12 @@ class ConfigReader:
       return
     self.config.add_section(section)
     self.updateConfig()
+
+  def getItems(self, section):
+    if self.checkSection(section):
+      return self.config.items(section)
+    raise Exception("Section " + section + " does not exist")
+
 
   def updateConfig(self):
     confile = open(self.configFile, "a") 
