@@ -12,15 +12,28 @@ class ConfigStore:
 
   def updateConfig(self, key, value, pathname):
     temp_file = "/tmp/temp.cfg"
-    objectKey = Helper.mapToKey(pathname)
+    keySectionPair = Helper.mapToKeySectionPair(pathname)
+    objectKey = keySectionPair[0]
+    section = keySectionPair[1] 
     open(temp_file, "w").close()
     self.dao.downloadObject(objectKey, temp_file)
-    Helper.mergeConfig(pathname, temp_file)
+    Helper.mergeConfig(pathname, temp_file, section)
+    self.dao.uploadObject(pathname, objectKey)    
 
 
 class Helper:
   
-  def mergeConfig(oldConfig, newConfig):
+  @staticmethod
+  def mergeConfig(oldConfig, newConfig, section):
     oldConfigReader = ConfigReader(oldConfig)
     newConfigReader = ConfigReader(newConfig)
+    oldKeys = oldConfigReader.getKeys(section)
+    newKeys = newConfigReader.getKeys(section)
+    for key in oldKeys:
+      if key in newKeys:
+        oldConfigReader.setValue(section, key, newConfigReader.getValue(section, key))
+          
+  @staticmethod
+  def mapToKeySectionPair(pathname):
+    pass
     
