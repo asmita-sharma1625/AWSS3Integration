@@ -1,27 +1,24 @@
 import ConfigParser
-from exceptions import IncorrectConfigException
+#from exceptions import IncorrectConfigException
 
 class ConfigReader:  
   
   def __init__(self,configFile):
+    self.configFile = configFile
     self.config = ConfigParser.RawConfigParser()
-    self.config.read(configFile)
+    self.config.read(self.configFile)
   
   def getValue(self, section, key):
     if self.checkSection(section):
       if self.checkOption(section, key):
-        value = self.config.get(section, key)
-      else:
-        raise IncorrectConfigException("Key " + key + " does not exist")
-    else: 
-      raise IncorrectConfigException("Section " + section + " does not exist")
-    return value
+        return self.config.get(section, key)
+      raise Exception("Key " + key + " does not exist")
+    raise Exception("Section " + section + " does not exist")
 
   def getKeys(self, section):
     if self.checkSection(section):
       return self.config.options(section)
-    else: 
-      raise IncorrectConfigException("Section " + section + " does not exist")
+    raise Exception("Section " + section + " does not exist")
       
   def checkSection(self, section):
     return self.config.has_section(section)
@@ -31,3 +28,16 @@ class ConfigReader:
 
   def setValue(self, section, key, value):
     self.config.set(section, key, value)
+    self.updateConfig()
+
+  def addSection(self, section):
+    if self.checkSection(section):
+      return
+    self.config.add_section(section)
+    self.updateConfig()
+
+  def updateConfig(self):
+    confile = open(self.configFile, "a") 
+    self.config.write(confile)
+    confile.close()
+    self.config.read(self.configFile)

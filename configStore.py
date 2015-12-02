@@ -1,6 +1,7 @@
 from s3Dao import S3Dao
 import logging
 from configReader import ConfigReader
+import os
 
 logger = logging.getLogger("s3Integration")
 
@@ -19,7 +20,7 @@ class ConfigStore:
     self.dao.downloadObject(objectKey, temp_file)
     Helper.mergeConfig(pathname, temp_file, section)
     self.dao.uploadObject(pathname, objectKey)    
-
+    os.remove(temp_file)
 
 class Helper:
   
