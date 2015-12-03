@@ -2,26 +2,28 @@ from s3Dao import S3Dao
 import logging
 from configReader import ConfigReader
 import os
+from helper import Helper
 
 logger = logging.getLogger("s3Integration")
 
-class ConfigStore:
+class ConfigChangeNotifier:
   
-  def ConfigStore(self, bucket):
+  def __init__(self, bucket, objectKey):
     self.dao = S3Dao()
     self.dao.setBucket(bucket)
+    self.objectKey = objectKey
+    self.oldConfig = Helper.getConfigFromRemote(self.objectKey)
 
-  def NotifyConfigChanges(self, key, value, pathname):
-    temp_file = "/tmp/temp.cfg"
-    helper = Helper(pathname, temp_file)
-    objectKey = helper.mapToKey(pathname)
-    open(temp_file, "w").close()
-    self.dao.downloadObject(objectKey, temp_file)
-    if helper.compareConfig():
+  def NotifyIfConfigChange(self):
+    newConfig = "/tmp/newConfig.conf"
+    configChangeDetector = ConfigChangeDetector(self.oldConfig, newConfig)
+    open(newConfig, "w").close()
+    self.dao.downloadObject(self.objectKey, newConfig)
+    if configChangeDetector.compareConfig():
       #self.dao.uploadObject(pathname, objectKey)    
-    os.remove(temp_file)
+    os.remove(newConfig)
 
-class Helper:
+class ConfigChangeDetector:
 
   def __init__(self, oldConfig, newConfig):
     self.oldConfig = oldConfig
@@ -52,7 +54,3 @@ class Helper:
       newValue = self.newConfigReader.getValue(section, key)
       if oldValue != newValue:
         self.flag = True
-          
-  def mapToKeySectionPair(self):
-    pass
-    
