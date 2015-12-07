@@ -8,15 +8,14 @@ class ConfigChangeDetector:
   '''
   
   def __init__(self, oldConfig, newConfig):
-    DIFF_FILE_PREFIX = "diff_"
     self.newConfig = newConfig
     self.oldConfig = oldConfig
     self.oldConfigReader = ConfigReader(self.oldConfig)
     self.newConfigReader = ConfigReader(self.newConfig)
     self.diff_flag = False
-    self.diff_config_old = Helper.prependToFilename(DIFF_FILE_PREFIX, oldConfig)
+    self.diff_config_old = "/tmp/config_diff_old.conf"
     self.diff_old_config_reader = ConfigReader(self.diff_config_old)
-    self.diff_config_new = Helper.prependToFilename(DIFF_FILE_PREFIX, newConfig)
+    self.diff_config_new = "/tmp/config_diff_new.conf"
     self.diff_new_config_reader = ConfigReader(self.diff_config_new)
     
   def compareConfig(self):
