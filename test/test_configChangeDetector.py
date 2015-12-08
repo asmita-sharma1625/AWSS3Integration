@@ -1,5 +1,5 @@
 import unittest
-import configChangeNotifier
+from configManager import configChangeNotifier
 import ConfigParser
 import os
 
