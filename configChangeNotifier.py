@@ -1,5 +1,4 @@
-from s3Dao import S3Dao
-from configReader import ConfigReader
+import configReader 
 
 class ConfigChangeDetector:
   
@@ -10,13 +9,13 @@ class ConfigChangeDetector:
   def __init__(self, oldConfig, newConfig):
     self.newConfig = newConfig
     self.oldConfig = oldConfig
-    self.oldConfigReader = ConfigReader(self.oldConfig)
-    self.newConfigReader = ConfigReader(self.newConfig)
+    self.oldConfigReader = configReader.ConfigReader(self.oldConfig)
+    self.newConfigReader = configReader.ConfigReader(self.newConfig)
     self.diff_flag = False
     self.diff_config_old = "/tmp/config_diff_old.conf"
-    self.diff_old_config_reader = ConfigReader(self.diff_config_old)
+    self.diff_old_config_reader = configReader.ConfigReader(self.diff_config_old)
     self.diff_config_new = "/tmp/config_diff_new.conf"
-    self.diff_new_config_reader = ConfigReader(self.diff_config_new)
+    self.diff_new_config_reader = configReader.ConfigReader(self.diff_config_new)
     
   def compareConfig(self):
     oldSections = self.oldConfigReader.getSections()

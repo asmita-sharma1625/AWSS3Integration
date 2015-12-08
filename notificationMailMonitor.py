@@ -1,11 +1,13 @@
-from configChangeNotifier import ConfigChangeNotifier
+import configChangeNotifier 
+import mailServer
+import s3Dao
 
 class ConfigManager:
 
   def __init__(self):
     
     self.S3_BUCKET = "compute-config"
-    self.s3Dao = S3Dao()
+    self.s3Dao = s3Dao.S3Dao()
     self.s3Dao.setBucket(self.S3_BUCKET)
 
   def reportAllConfigChange(self):
@@ -20,7 +22,7 @@ class ConfigManager:
     OLD_CONFIG_NODE = self.getConfigNode(objectKey)
     oldConfig = "/tmp/oldConfig.conf"
     self.getConfig(OLD_CONFIG_NODE, OLD_CONFIG_PATH, oldConfig)
-    configChangeDetector = ConfigChangeDetector(oldConfig, newConfig)
+    configChangeDetector = configChangeNotifier.ConfigChangeDetector(oldConfig, newConfig)
     if configChangeDetector.compareConfig():
       old_config_diff = configChangeDetector.getDiffInOldConfig()
       new_config_diff = configChangeDetector.getDiffInNewConfig()
@@ -49,7 +51,7 @@ class ConfigManager:
     return Helper.copyConfigFromRemote(node, src_path, dest_path)
     
   def applyChange(self, newConfig, node, path):
-    ConfigChangeApplier(newConfig, node, path).copyConfigToRemote()
+    configChangeNotifier.ConfigChangeApplier(newConfig, node, path).copyConfigToRemote()
 
   def notifyConfigChange(self, objectKey, oldConfigDiff, newConfigDiff):
     server = "smtp.mail.yahoo.com"
@@ -60,7 +62,7 @@ class ConfigManager:
     oldDiffContent = "On Node Configuration :\n" + Helper.getFileContents(oldConfigDiff)
     newDiffContent = "S3 Configuration :\n" + Helper.getFileContents(newConfigDiff)
     text = "Config Differences - \n " + oldDiffContent + "\n\n\n\n" + newDiffContent
-    mailServer = MailServer(server, sender, password)
+    mailServer = mailServer.MailServer(server, sender, password)
     mailServer.sendMessage(receiver, subject, text)
 
 

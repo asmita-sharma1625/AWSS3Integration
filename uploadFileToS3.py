@@ -1,4 +1,4 @@
-from s3Dao import S3Dao
+import s3Dao
 import sys
 
 if len(argv) == 4:
@@ -8,6 +8,6 @@ if len(argv) == 4:
 else:
   raise Exception("Invalid Arguments passed. Required : S3 bucket, Key and Filepath")
 
-s3Dao = S3Dao()
+s3Dao = s3Dao.S3Dao()
 s3Dao.uploadObject(key, path, bucket)
 
