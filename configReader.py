@@ -30,6 +30,8 @@ class ConfigReader:
     return self.config.has_option(section, key)
 
   def setValue(self, section, key, value):
+    if not self.checkSection(section):
+      self.addSection(section)
     self.config.set(section, key, value)
     self.updateConfig()
 

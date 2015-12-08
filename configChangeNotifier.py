@@ -24,8 +24,11 @@ class ConfigChangeDetector:
     for section in newSections:
       if section not in oldSections:
         self.diff_new_config_reader.addSection(section)
-        self.diff_flag = True  
-      self.compareSection(oldConfig, newConfig, section)
+        self.diff_flag = True 
+        for key in self.newConfigReader.getKeys(section):
+          self.diff_new_config_reader.setValue(section, key, self.newConfigReader.getValue(section, key)) 
+      else:
+        self.compareSection(section)
     return self.diff_flag
 
   def compareSection(self, section):
@@ -33,14 +36,15 @@ class ConfigChangeDetector:
     newKeys = self.newConfigReader.getKeys(section)
     for key in newKeys:
       if key not in oldKeys:
-        self.diff_new_config_reader.setValue(section, key, self.diff_new_config_reader.getValue(section, key)
+        self.diff_new_config_reader.setValue(section, key, self.newConfigReader.getValue(section, key))
         self.diff_flag = True
-      oldValue = self.oldConfigReader.getValue(section, key)
-      newValue = self.newConfigReader.getValue(section, key)
-      if oldValue != newValue:
-        self.diff_old_config_reader.setValue(section, key, self.diff_old_config_reader.getValue(section, key)
-        self.diff_new_config_reader.setValue(section, key, self.diff_new_config_reader.getValue(section, key)
-        self.diff_flag = True
+      else:
+        oldValue = self.oldConfigReader.getValue(section, key)
+        newValue = self.newConfigReader.getValue(section, key)
+        if oldValue != newValue:
+          self.diff_old_config_reader.setValue(section, key, self.oldConfigReader.getValue(section, key))
+          self.diff_new_config_reader.setValue(section, key, self.newConfigReader.getValue(section, key))
+          self.diff_flag = True
     return self.diff_flag
 
   def getDiffInOldConfig(self):

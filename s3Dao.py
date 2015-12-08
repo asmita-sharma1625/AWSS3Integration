@@ -59,3 +59,10 @@ class S3Dao:
     except:
       logger.error("Cannot delete object with key " + key + " from bucket " + bucket_name)
 
+  def getAllObjects(self, bucket_name = None):
+    if bucket_name == None:
+      bucket_name = self.getBucket()
+    listOfObjects = []  
+    for obj in self.s3.Bucket(bucket_name).objects.all():
+      listOfObjects.append(obj.key)
+    return listOfObjects
