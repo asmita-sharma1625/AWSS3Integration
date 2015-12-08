@@ -1,5 +1,5 @@
 import unittest
-import s3Dao 
+from configManager import s3Dao 
 import boto3
 
 class TestS3Dao(unittest.TestCase):

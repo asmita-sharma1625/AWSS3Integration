@@ -1,5 +1,5 @@
 import unittest
-import configReader
+from configManager import configReader
 import ConfigParser
 import os
 
