@@ -4,9 +4,9 @@ from email.mime.text import MIMEText
 class MailServer:
 
   def __init__(self, server, sender, password):
-    self.server = server #'smtp.mail.yahoo.com'
-    self.sender = sender #'s3.notifier@yahoo.com'
-    self.password = password #'jio@1234'
+    self.server = server
+    self.sender = sender
+    self.password = password 
     try:
       self.smtpObj = smtplib.SMTP(server, 587)
       self.smtpObj.ehlo()
@@ -23,8 +23,7 @@ class MailServer:
 
   def sendMessage(self, receiver, subject, message):
     msg = MIMEText(text)
-    #receiver = 'itsmeasmi25@gmail.com'
-    msg['Subject'] = subject #'JCS_Config_Change_Notification'
+    msg['Subject'] = subject 
     msg['From'] = self.sender
     msg['To'] = receiver
     try:

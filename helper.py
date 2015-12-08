@@ -32,25 +32,10 @@ class Helper:
   @staticmethod
   def getFilename(path):
     os.path.basename(path)
-
+ 
   @staticmethod
-  def prependToFilename(prefix, path):
-    filename = prefix + Helper.getFilename
-    return os.path.dirname(path) + filename 
-
-  @staticmethod
-  def getNewConfigPathFromResponseMailSubject(subject):
-    ''' subject structure - Topic:Path '''
-    return subject.split(":")[1]
-
-  @staticmethod
-  def getTimestampFromPath(path):
-    ''' path structure - /tmp/timestamp/......'''
-    return path.split("/")[2]    
-
-  @staticmethod
-  def deleteAllConfigsBeforeTime(dirpath, timestamp):
-    subdir = next(os.walk(dirpath))[1]
-    for x in subdir:
-      if x <= timestamp:
-        shutil.rmtree(os.path.join(dirpath, x))
+  def getFileContents(filename):
+    fp = open(filename, "rb")
+    content = fp.read()
+    fp.close()
+    return content 

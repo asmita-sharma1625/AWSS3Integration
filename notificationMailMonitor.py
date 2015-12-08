@@ -30,6 +30,7 @@ class ConfigManager:
       if apply_flag:
         self.applyChange(newConfig, OLD_CONFIG_NODE, OLD_CONFIG_PATH)
       else:
+        self.notifyConfigChange(objectKey, old_config_diff, new_config_diff)
         #call mail server to send notification with diff files and objectKey and old config node and path.
 
   def getAllS3Objects(self):
@@ -50,6 +51,17 @@ class ConfigManager:
   def applyChange(self, newConfig, node, path):
     ConfigChangeApplier(newConfig, node, path).copyConfigToRemote()
 
+  def notifyConfigChange(self, objectKey, oldConfigDiff, newConfigDiff):
+    server = "smtp.mail.yahoo.com"
+    sender = "s3.notifier@yahoo.com"
+    password = "jio@1234"
+    receiver = "itsmeasmi25@gmail.com"
+    subject = "JCS_Config_Change_Notification : S3 Object Key" + objectKey 
+    oldDiffContent = "On Node Configuration :\n" + Helper.getFileContents(oldConfigDiff)
+    newDiffContent = "S3 Configuration :\n" + Helper.getFileContents(newConfigDiff)
+    text = "Config Differences - \n " + oldDiffContent + "\n\n\n\n" + newDiffContent
+    mailServer = MailServer(server, sender, password)
+    mailServer.sendMessage(receiver, subject, text)
 
 
 
