@@ -1,5 +1,5 @@
 import unittest
-from configReader import ConfigReader
+import configReader
 import ConfigParser
 import os
 
@@ -13,7 +13,7 @@ class TestConfigReader(unittest.TestCase):
     if os.path.exists(self.CONF_FILE):
       os.remove(self.CONF_FILE)
     open(self.CONF_FILE, "a").close()
-    self.reader = ConfigReader(self.CONF_FILE)
+    self.reader = configReader.ConfigReader(self.CONF_FILE)
     self.config = ConfigParser.RawConfigParser()
     self.config.read(self.CONF_FILE)
     self.config.add_section(self.SECTION)

@@ -1,5 +1,5 @@
 import unittest
-from  s3Dao import S3Dao
+import s3Dao 
 import boto3
 
 class TestS3Dao(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestS3Dao(unittest.TestCase):
   KEY = "demo"
 
   def setUp(self):
-    self.s3Dao = S3Dao()
+    self.s3Dao = s3Dao.S3Dao()
     self.s3Dao.setBucket(TestS3Dao.BUCKET)
 
   def test_getBucket(self):
