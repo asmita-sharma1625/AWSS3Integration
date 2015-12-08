@@ -48,7 +48,8 @@ class ConfigManager:
     return Helper.mapToNode(objectKey)
 
   def getConfig(self, node, src_path, dest_path = None):
-    return Helper.copyConfigFromRemote(node, src_path, dest_path)
+    return Helper.copyConfig(os.path.join("/tmp", src_path), dest_path)
+    #return Helper.copyConfigFromRemote(node, src_path, dest_path)
     
   def applyChange(self, newConfig, node, path):
     configChangeNotifier.ConfigChangeApplier(newConfig, node, path).copyConfigToRemote()

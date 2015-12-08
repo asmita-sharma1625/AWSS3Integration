@@ -16,6 +16,10 @@ class Helper:
     os.system("scp: " + node + ":" + srcpath + " " + destpath)    
   
   @staticmethod
+  def copyConfig(srcpath, destpath):
+    os.system("cp " + srcpath + " " + destpath)
+
+  @staticmethod
   def copyConfigToRemote(node, srcpath, destpath):
     user = getpass.getuser()
     node = user+"@"+node
