@@ -3,7 +3,6 @@ import sys
 import logging
 
 logger = logging.getLogger("s3Integration")
-logger.addHandler(logging.FileHandler("/tmp/s3Integration.log"))
 
 class S3Dao:
 
@@ -12,6 +11,7 @@ class S3Dao:
       self.s3 = boto3.resource('s3')
     except:
       logger.error("Cannot instantiate S3 resource")
+      raise Exception("Cannot instantiate S3 resource")
 
   def getBucket(self):
     return self.bucket
@@ -27,6 +27,7 @@ class S3Dao:
       s3object.download_file(pathname)   
     except:
       logger.error("Cannot download object to file " + pathname + " from bucket " + bucket_name + " having key " + key)     
+      raise Exception("Cannot download object to file " + pathname + " from bucket " + bucket_name + " having key " + key)
 
   def uploadObject(self, key, pathname, bucket_name = None):
     if bucket_name == None:
@@ -36,6 +37,7 @@ class S3Dao:
       bucket.upload_file(pathname, key)
     except:
       logger.error("Cannot upload file " + pathname + " to bucket " + bucket_name + " with key " + key)
+      raise Exception("Cannot upload file " + pathname + " to bucket " + bucket_name + " with key " + key)
 
   def getBuckets(self):
     listOfBuckets = []
@@ -58,6 +60,7 @@ class S3Dao:
       s3object.delete()
     except:
       logger.error("Cannot delete object with key " + key + " from bucket " + bucket_name)
+      raise Exception("Cannot delete object with key " + key + " from bucket " + bucket_name)
 
   def getAllObjects(self, bucket_name = None):
     if bucket_name == None:

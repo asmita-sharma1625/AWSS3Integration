@@ -18,7 +18,10 @@ class TestS3Dao(unittest.TestCase):
     self.assertFalse(self.s3Dao.getBucketIfExists(TestS3Dao.BUCKET) == None)
 
   def test_uploadObjectIfNotExists(self):
-    self.s3Dao.removeObject(TestS3Dao.KEY)
+    try:
+      self.s3Dao.removeObject(TestS3Dao.KEY)
+    except:
+      pass
     #self.assertTrue(self.s3Dao.getObjectIfExists(TestS3Dao.KEY) == None)
     open("/tmp/foo.txt", "a").close()
     self.s3Dao.uploadObject(TestS3Dao.KEY, "/tmp/foo.txt")

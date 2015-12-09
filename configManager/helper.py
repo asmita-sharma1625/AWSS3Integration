@@ -1,5 +1,4 @@
 import os, getpass
-import shutil
 
 class Helper:
 
@@ -27,7 +26,7 @@ class Helper:
 
   @staticmethod
   def mapToPath(objectKey):
-    return objectKey.split("/", 2)[1]
+    return objectKey.split("/", 1)[1]
 
   @staticmethod
   def mapToNode(objectKey):

@@ -1,24 +1,33 @@
 import ConfigParser
-#from exceptions import IncorrectConfigException
+import logging
+
+logger = logging.getLogger("s3Integration")
 
 class ConfigReader:  
   
   def __init__(self,configFile):
     self.configFile = configFile
     self.config = ConfigParser.RawConfigParser()
-    self.config.read(self.configFile)
+    try:
+      self.config.read(self.configFile)
+    except Exception:
+      logger.error("Cannot read config file : " + configFile)
+      raise Exception("Cannot read config file : " + configFile)
   
   def getValue(self, section, key):
     if self.checkSection(section):
       if self.checkOption(section, key):
         return self.config.get(section, key)
-      raise Exception("Key " + key + " does not exist")
-    raise Exception("Section " + section + " does not exist")
+      logger.error("Key " + key + " does not exist in config file :" + self.configFile)  
+      raise Exception("Key " + key + " does not exist in config file :" + self.configFile)
+    logger.error("Section " + section + " does not exist in config file :" + self.configFile)
+    raise Exception("Section " + section + " does not exist in config file :" + self.configFile)
 
   def getKeys(self, section):
     if self.checkSection(section):
       return self.config.options(section)
-    raise Exception("Section " + section + " does not exist")
+    logger.error("Section " + section + " does not exist in config file :" + self.configFile)
+    raise Exception("Section " + section + " does not exist in config file :" + self.configFile)
   
   def getSections(self):
     return self.config.sections()
@@ -44,8 +53,8 @@ class ConfigReader:
   def getItems(self, section):
     if self.checkSection(section):
       return self.config.items(section)
-    raise Exception("Section " + section + " does not exist")
-
+    logger.error("Section " + section + " does not exist in config file :" + self.configFile)
+    raise Exception("Section " + section + " does not exist in config file :" + self.configFile)
 
   def updateConfig(self):
     confile = open(self.configFile, "a") 

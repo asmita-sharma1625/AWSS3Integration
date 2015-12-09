@@ -1,4 +1,8 @@
 import configReader 
+import logging
+from helper import Helper
+
+logger = logging.getLogger("s3Integration")
 
 class ConfigChangeDetector:
   
@@ -64,4 +68,8 @@ class ConfigChangeApplier:
     self.config = config
     self.node = node
     self.path = path 
-    Helper.copyConfigToRemote(config, node, path) 
+    try:
+      Helper.copyConfigToRemote(config, node, path) 
+    except Exception:
+      logger.error("Unable to copy file " + config + " to node " + node + " at location " + path)
+      raise Exception("Unable to copy file " + config + " to node " + node + " at location " + path)
