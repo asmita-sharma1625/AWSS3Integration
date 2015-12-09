@@ -1,5 +1,8 @@
 import smtplib
 from email.mime.text import MIMEText
+import logging
+
+logger = logging.getLogger("s3Integration")
 
 class MailServer:
 
@@ -13,13 +16,15 @@ class MailServer:
       self.smtpObj.starttls()
       self.smtpObj.login(self.sender, self.password)
     except smtplib.SMTPException:
-      print "Error: unable to connect to email"
+      logger.error("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]")
+      raise Exception("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]") 
 
   def __del__(self):
     try:
       self.smtpObj.quit()
     except smtplib.SMTPException:
-      print "Error: unable to quit email session"
+      logger.error("Unable to quit email session")
+      pass
 
   def sendMessage(self, receiver, subject, message):
     msg = MIMEText(text)
@@ -29,5 +34,6 @@ class MailServer:
     try:
       self.smtpObj.sendmail(sender, receiver, msg.as_string())
     except smtplib.SMTPException:
-      print "Error: unable to send email"
+      logger.error("Unable to send email with subject - " + subject + " to receiver - " + receiver)
+      raise Exception("Unable to send email with subject - " + subject + " to receiver - " + receiver)
       
