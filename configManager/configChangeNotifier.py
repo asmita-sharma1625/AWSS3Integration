@@ -36,7 +36,7 @@ class ConfigChangeDetector:
    
   def compareConfig(self):
     flag1 = self.compareConfigRelativeToNew()
-    self.initializeReaders(self.newConfig, self.oldConfig, self.diff_new, self.diff_old)
+    self.initializeReaders(self.newConfig, self.oldConfig, self.diff_new, self.diff_old, False)
     flag2 = self.compareConfigRelativeToNew()
     return flag1 or flag2  
 
