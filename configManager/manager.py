@@ -10,7 +10,7 @@ logger.addHandler(logging.FileHandler("/tmp/s3Integration.log"))
 
 class ConfigManager:
 
-  def __init__(self):
+  def __init__(self, config_file):
     self.SECTION = "Manager"
     self.CONF_DIR = "ConfDir"#"/tmp"
     self.MAIL_SERVER = "mailServer"#"smtp.mail.yahoo.com"
@@ -21,7 +21,7 @@ class ConfigManager:
     self.BUCKET = "s3Bucket"#"compute-config"
     
     try:
-      self.configReader = configReader.ConfigReader("/tmp/Config_Manager_config.conf")
+      self.configReader = configReader.ConfigReader(config_file)#("/tmp/Config_Manager_config.conf")
       self.S3_BUCKET = self.configReader.getValue(self.SECTION, self.BUCKET) 
     except Exception:
       logger.error("Invalid config file")
