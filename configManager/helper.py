@@ -26,11 +26,12 @@ class Helper:
 
   @staticmethod
   def mapToPath(objectKey):
+    print "***KEY***", objectKey
     return objectKey.split("/", 1)[1]
 
   @staticmethod
   def mapToNode(objectKey):
-    return objectKey.split("/", 2)[0]
+    return objectKey.split("/", 1)[0]
 
   @staticmethod
   def getFilename(path):

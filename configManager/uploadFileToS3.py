@@ -1,7 +1,7 @@
 import s3Dao
 import sys
 
-if len(argv) == 4:
+if len(sys.argv) == 4:
   bucket = sys.argv[1]
   key = sys.argv[2]
   path = sys.argv[3]

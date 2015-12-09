@@ -1,6 +1,7 @@
 import configReader 
 import logging
 import helper
+import os
 
 logger = logging.getLogger("s3Integration")
 
@@ -11,17 +12,35 @@ class ConfigChangeDetector:
   '''
   
   def __init__(self, oldConfig, newConfig):
+    self.oldConfig = oldConfig
+    self.newConfig = newConfig
+    self.diff_old = "/tmp/config_diff_old.conf"
+    self.diff_new = "/tmp/config_diff_new.conf"
+    self.initializeReaders(self.oldConfig, self.newConfig, self.diff_old, self.diff_new)
+
+  def initializeReaders(self, oldConfig, newConfig, diff_old, diff_new, overwriteFlag = True):
     self.newConfig = newConfig
     self.oldConfig = oldConfig
     self.oldConfigReader = configReader.ConfigReader(self.oldConfig)
     self.newConfigReader = configReader.ConfigReader(self.newConfig)
     self.diff_flag = False
-    self.diff_config_old = "/tmp/config_diff_old.conf"
+    self.diff_config_old = diff_old
+    self.diff_config_new = diff_new
+    if overwriteFlag is True:
+      if os.path.exists(self.diff_config_new):
+        os.remove(self.diff_config_new)
+      if os.path.exists(self.diff_config_old):
+        os.remove(self.diff_config_old)
     self.diff_old_config_reader = configReader.ConfigReader(self.diff_config_old)
-    self.diff_config_new = "/tmp/config_diff_new.conf"
     self.diff_new_config_reader = configReader.ConfigReader(self.diff_config_new)
-    
+   
   def compareConfig(self):
+    flag1 = self.compareConfigRelativeToNew()
+    self.initializeReaders(self.newConfig, self.oldConfig, self.diff_new, self.diff_old)
+    flag2 = self.compareConfigRelativeToNew()
+    return flag1 or flag2  
+
+  def compareConfigRelativeToNew(self):
     oldSections = self.oldConfigReader.getSections()
     newSections = self.newConfigReader.getSections()
     for section in newSections:
@@ -32,7 +51,7 @@ class ConfigChangeDetector:
           self.diff_new_config_reader.setValue(section, key, self.newConfigReader.getValue(section, key)) 
       else:
         self.compareSection(section)
-    return self.diff_flag
+    return self.diff_flag 
 
   def compareSection(self, section):
     oldKeys = self.oldConfigReader.getKeys(section)

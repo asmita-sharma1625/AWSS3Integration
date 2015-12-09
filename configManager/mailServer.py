@@ -27,12 +27,12 @@ class MailServer:
       pass
 
   def sendMessage(self, receiver, subject, message):
-    msg = MIMEText(text)
+    msg = MIMEText(message)
     msg['Subject'] = subject 
     msg['From'] = self.sender
     msg['To'] = receiver
     try:
-      self.smtpObj.sendmail(sender, receiver, msg.as_string())
+      self.smtpObj.sendmail(self.sender, receiver, msg.as_string())
     except smtplib.SMTPException:
       logger.error("Unable to send email with subject - " + subject + " to receiver - " + receiver)
       raise Exception("Unable to send email with subject - " + subject + " to receiver - " + receiver)

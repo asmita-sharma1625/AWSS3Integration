@@ -3,7 +3,7 @@ import mailServer
 import s3Dao
 import helper
 import configReader
-import logging
+import logging, os
 
 logger = logging.getLogger("s3Integration")
 logger.addHandler(logging.FileHandler("/tmp/s3Integration.log"))
@@ -36,8 +36,12 @@ class ConfigManager:
   def reportOrApplyConfigChange(self, objectKey, apply_flag = False):
     newConfig = "/tmp/newConfig.conf"
     self.getS3Object(objectKey, newConfig)
-    OLD_CONFIG_PATH = self.getConfigPath(objectKey)
-    OLD_CONFIG_NODE = self.getConfigNode(objectKey)
+    try:
+      OLD_CONFIG_PATH = self.getConfigPath(objectKey)
+      OLD_CONFIG_NODE = self.getConfigNode(objectKey)
+    except Exception:
+      logger.error("Config corresponding to s3 object - " + objectKey + " not found")
+      return
     oldConfig = "/tmp/oldConfig.conf"
     self.getConfig(OLD_CONFIG_NODE, OLD_CONFIG_PATH, oldConfig)
     configChangeDetector = configChangeNotifier.ConfigChangeDetector(oldConfig, newConfig)
@@ -54,7 +58,7 @@ class ConfigManager:
         self.notifyConfigChange(objectKey, old_config_diff, new_config_diff)
 
   def getAllS3Objects(self):
-    return self.s3Dao.listObjects()
+    return self.s3Dao.getAllObjects()
 
   def getS3Object(self, objectKey, newConfig):
     self.s3Dao.downloadObject(objectKey, newConfig)
@@ -77,10 +81,12 @@ class ConfigManager:
     sender = self.configReader.getValue(self.SECTION, self.MAIL_SENDER)
     password = self.configReader.getValue(self.SECTION, self.MAIL_PASSWORD)
     receiver = self.configReader.getValue(self.SECTION, self.MAIL_RECEIVER)
-    subject = self.configReader.getValue(self.SECTION, self.MAIL_SUBJECT) + ": S3 Object Key :" + objectKey 
+    subject = self.configReader.getValue(self.SECTION, self.MAIL_SUBJECT) + ":S3 Object Key:" + objectKey 
     oldDiffContent = "On Node Configuration :\n" + helper.Helper.getFileContents(oldConfigDiff)
     newDiffContent = "S3 Configuration :\n" + helper.Helper.getFileContents(newConfigDiff)
-    text = "Config Differences - \n " + oldDiffContent + "\n\n\n\n" + newDiffContent
-    mailServer = mailServer.MailServer(server, sender, password)
-    mailServer.sendMessage(receiver, subject, text)
+    text = "Config Differences - \n\n" + oldDiffContent + "\n\n\n" + newDiffContent
+    
+    mail = mailServer.MailServer(server, sender, password)
+    mail.sendMessage(receiver, subject, text)
+    return subject + "\001" + text
 
