@@ -57,7 +57,7 @@ class ConfigReader:
     raise Exception("Section " + section + " does not exist in config file :" + self.configFile)
 
   def updateConfig(self):
-    confile = open(self.configFile, "a") 
+    confile = open(self.configFile, "w") 
     self.config.write(confile)
     confile.close()
     self.config.read(self.configFile)

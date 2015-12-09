@@ -19,6 +19,11 @@ class ConfigChangeDetector:
     self.initializeReaders(self.oldConfig, self.newConfig, self.diff_old, self.diff_new)
 
   def initializeReaders(self, oldConfig, newConfig, diff_old, diff_new, overwriteFlag = True):
+    if overwriteFlag is True:
+      if os.path.exists(self.diff_new):
+        os.remove(self.diff_new)
+      if os.path.exists(self.diff_old):
+        os.remove(self.diff_old)
     self.newConfig = newConfig
     self.oldConfig = oldConfig
     self.oldConfigReader = configReader.ConfigReader(self.oldConfig)
@@ -26,11 +31,6 @@ class ConfigChangeDetector:
     self.diff_flag = False
     self.diff_config_old = diff_old
     self.diff_config_new = diff_new
-    if overwriteFlag is True:
-      if os.path.exists(self.diff_config_new):
-        os.remove(self.diff_config_new)
-      if os.path.exists(self.diff_config_old):
-        os.remove(self.diff_config_old)
     self.diff_old_config_reader = configReader.ConfigReader(self.diff_config_old)
     self.diff_new_config_reader = configReader.ConfigReader(self.diff_config_new)
    
@@ -70,10 +70,10 @@ class ConfigChangeDetector:
     return self.diff_flag
 
   def getDiffInOldConfig(self):
-    return self.diff_config_old
+    return self.diff_old
 
   def getDiffInNewConfig(self):
-    return self.diff_config_new
+    return self.diff_new
 
 
 
