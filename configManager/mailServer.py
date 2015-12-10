@@ -18,6 +18,9 @@ class MailServer:
     except smtplib.SMTPException:
       logger.error("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]")
       raise Exception("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]") 
+    except Exception:
+      logger.error("Unable to connect to server : " + server)
+      raise Exception("Unable to connect to server : " + server)
 
   def __del__(self):
     try:
