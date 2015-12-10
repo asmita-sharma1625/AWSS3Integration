@@ -1,6 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 import logging
+import traceback
 
 logger = logging.getLogger("s3Integration")
 
@@ -16,11 +17,11 @@ class MailServer:
       self.smtpObj.starttls()
       self.smtpObj.login(self.sender, self.password)
     except smtplib.SMTPException:
-      logger.error("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]")
-      raise Exception("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]") 
+      logger.error("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]" + ":" + traceback.format_exc())
+      raise Exception("Unable to login to email server " + self.server + " with [username, password] = [" + self.sender + "," + self.password + "]" + ":" + traceback.format_exc()) 
     except Exception:
-      logger.error("Unable to connect to server : " + server)
-      raise Exception("Unable to connect to server : " + server)
+      logger.error("Unable to connect to server : " + server + ":" + traceback.format_exc())
+      raise Exception("Unable to connect to server : " + server + ":" + traceback.format_exc())
 
   def __del__(self):
     try:
