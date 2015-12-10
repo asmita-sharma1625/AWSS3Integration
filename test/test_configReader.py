@@ -12,7 +12,7 @@ class TestConfigReader(unittest.TestCase):
     self.CONF_FILE = "/tmp/test_conf.cfg"
     if os.path.exists(self.CONF_FILE):
       os.remove(self.CONF_FILE)
-    open(self.CONF_FILE, "a").close()
+    open(self.CONF_FILE, "w").close()
     self.reader = configReader.ConfigReader(self.CONF_FILE)
     self.config = ConfigParser.RawConfigParser()
     self.config.read(self.CONF_FILE)
@@ -26,12 +26,12 @@ class TestConfigReader(unittest.TestCase):
   def test_addSection(self):
     self.config.remove_section(self.SECTION)
     self.reader.addSection(self.SECTION)
-    self.updateConfig()
+    self.config.read(self.CONF_FILE)   
     self.assertTrue(self.config.has_section(self.SECTION))
 
   def test_setValue(self):
     self.reader.setValue(self.SECTION, self.KEY, self.VALUE)
-    self.updateConfig()
+    self.config.read(self.CONF_FILE)
     self.assertEquals(self.config.get(self.SECTION, self.KEY), self.VALUE)
 
   def test_getValue(self):
@@ -48,11 +48,11 @@ class TestConfigReader(unittest.TestCase):
     self.assertEquals(self.reader.getKeys(self.SECTION), self.config.options(self.SECTION))
 
   def updateConfig(self):
-    conf = open(self.CONF_FILE, "a")
+    conf = open(self.CONF_FILE, "w")
     self.config.write(conf)
     conf.close()
     self.config.read(self.CONF_FILE)
-    self.reader.updateConfig()
+    self.reader = configReader.ConfigReader(self.CONF_FILE)   
 
 if __name__ == '__main__':
   unittest.main()
