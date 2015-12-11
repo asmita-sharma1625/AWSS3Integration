@@ -21,6 +21,7 @@ class TestConfigManager(unittest.TestCase):
 
   def test_reportAllConfigChange(self):
     #os.system("python configManager/uploadFileToS3.py " + self.manager.BUCKET + " " + TestConfigManager.OBJECT_KEY + " test/test_config_1.conf")
+    print "inside test ---------------------------"
     self.manager.reportAllConfigChange()   
  
   def test_notifyConfigChange(self):

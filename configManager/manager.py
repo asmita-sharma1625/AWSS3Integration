@@ -45,8 +45,10 @@ class ConfigManager:
     oldConfig = "/tmp/oldConfig.conf"
     self.getConfig(OLD_CONFIG_NODE, OLD_CONFIG_PATH, oldConfig)
     configChangeDetector = configChangeNotifier.ConfigChangeDetector(oldConfig, newConfig)
-    if configChangeDetector.compareConfig():
+    print "before check****"
+    if not configChangeDetector.compareConfig():
       config_diff = configChangeDetector.getDiff()
+      print "config_diff : ", open(config_diff, 'r').readlines()
       ''' notify any change to registered user along 
           with objectKey and diff files if apply_flag is False 
           else apply the change on the related node'''
