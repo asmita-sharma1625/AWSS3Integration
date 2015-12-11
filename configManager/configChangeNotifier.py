@@ -2,6 +2,8 @@ import configReader
 import logging
 import helper
 import os
+import difflib
+import filecmp
 
 logger = logging.getLogger("s3Integration")
 
@@ -14,10 +16,13 @@ class ConfigChangeDetector:
   def __init__(self, oldConfig, newConfig):
     self.oldConfig = oldConfig
     self.newConfig = newConfig
+    self.diff = "/tmp/config_diff.conf"
+    '''
     self.diff_old = "/tmp/config_diff_old.conf"
     self.diff_new = "/tmp/config_diff_new.conf"
     self.initializeReaders(self.oldConfig, self.newConfig, self.diff_old, self.diff_new)
-
+    '''
+  '''
   def initializeReaders(self, oldConfig, newConfig, diff_old, diff_new, overwriteFlag = True):
     if overwriteFlag is True:
       if os.path.exists(self.diff_new):
@@ -33,13 +38,23 @@ class ConfigChangeDetector:
     self.diff_config_new = diff_new
     self.diff_old_config_reader = configReader.ConfigReader(self.diff_config_old)
     self.diff_new_config_reader = configReader.ConfigReader(self.diff_config_new)
-   
+   '''
   def compareConfig(self):
+    flag = filecmp.cmp(self.newConfig, self.oldConfig)
+    if flag is True:
+      return True
+    fp = open(self.diff, "w")
+    for line in difflib.unified_diff(open(self.newConfig).readlines(), open(self.oldConfig).readlines(), self.newConfig, self.oldConfig):
+      fp.write(line)
+    fp.close()
+    return False
+    '''
     flag1 = self.compareConfigRelativeToNew()
     self.initializeReaders(self.newConfig, self.oldConfig, self.diff_new, self.diff_old, False)
     flag2 = self.compareConfigRelativeToNew()
     return flag1 or flag2  
-
+    '''
+  '''
   def compareConfigRelativeToNew(self):
     oldSections = self.oldConfigReader.getSections()
     newSections = self.newConfigReader.getSections()
@@ -74,7 +89,9 @@ class ConfigChangeDetector:
 
   def getDiffInNewConfig(self):
     return self.diff_new
-
+  '''
+  def getDiff(self):
+    return self.diff
 
 
 class ConfigChangeApplier:

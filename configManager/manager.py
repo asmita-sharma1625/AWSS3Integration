@@ -46,8 +46,7 @@ class ConfigManager:
     self.getConfig(OLD_CONFIG_NODE, OLD_CONFIG_PATH, oldConfig)
     configChangeDetector = configChangeNotifier.ConfigChangeDetector(oldConfig, newConfig)
     if configChangeDetector.compareConfig():
-      old_config_diff = configChangeDetector.getDiffInOldConfig()
-      new_config_diff = configChangeDetector.getDiffInNewConfig()
+      config_diff = configChangeDetector.getDiff()
       ''' notify any change to registered user along 
           with objectKey and diff files if apply_flag is False 
           else apply the change on the related node'''
@@ -55,7 +54,7 @@ class ConfigManager:
         self.applyChange(newConfig, OLD_CONFIG_NODE, OLD_CONFIG_PATH)
       else:
         '''call mail server to send notification with diff files and objectKey and old config node and path.'''
-        self.notifyConfigChange(objectKey, old_config_diff, new_config_diff)
+        self.notifyConfigChange(objectKey, config_diff)
 
   def getAllS3Objects(self):
     return self.s3Dao.getAllObjects()
@@ -76,15 +75,13 @@ class ConfigManager:
   def applyChange(self, newConfig, node, path):
     configChangeNotifier.ConfigChangeApplier(newConfig, node, path).copyConfigToRemote()
 
-  def notifyConfigChange(self, objectKey, oldConfigDiff, newConfigDiff):
+  def notifyConfigChange(self, objectKey, ConfigDiff):
     server = self.configReader.getValue(self.SECTION, self.MAIL_SERVER)
     sender = self.configReader.getValue(self.SECTION, self.MAIL_SENDER)
     password = self.configReader.getValue(self.SECTION, self.MAIL_PASSWORD)
     receiver = self.configReader.getValue(self.SECTION, self.MAIL_RECEIVER)
     subject = self.configReader.getValue(self.SECTION, self.MAIL_SUBJECT) + ":S3 Object Key:" + objectKey 
-    oldDiffContent = "On Node Configuration :\n" + helper.Helper.getFileContents(oldConfigDiff)
-    newDiffContent = "S3 Configuration :\n" + helper.Helper.getFileContents(newConfigDiff)
-    text = "Config Differences - \n\n" + oldDiffContent + "\n\n\n" + newDiffContent
+    text = helper.Helper.getFileContents(ConfigDiff)
     
     mail = mailServer.MailServer(server, sender, password)
     mail.sendMessage(receiver, subject, text)

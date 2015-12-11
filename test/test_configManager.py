@@ -25,21 +25,14 @@ class TestConfigManager(unittest.TestCase):
  
   def test_notifyConfigChange(self):
     objectKey = "dummy_key"
-    oldDiff = "I am old Diff"
-    newDiff = "I am new Diff"
-    oldDiffFile = "/tmp/dummy_old_diff.conf"
-    newDiffFile = "/tmp/dummy_new_diff.conf" 
-    fp1 = open(oldDiffFile, "w")
-    fp2 = open(newDiffFile, "w")
-    fp1.write(oldDiff)
-    fp2.write(newDiff)
-    fp1.close()
-    fp2.close()
-    message = self.manager.notifyConfigChange(objectKey, oldDiffFile, newDiffFile)
+    Diff = "I am old Diff"
+    DiffFile = "/tmp/dummy_diff.conf" 
+    fp = open(DiffFile, "w")
+    fp.write(Diff)
+    fp.close()
+    message = self.manager.notifyConfigChange(objectKey, DiffFile)
     self.assertTrue(objectKey in message)
-    self.assertTrue(oldDiff in message)
-    self.assertTrue(newDiff in message)
-    
+    self.assertTrue(Diff in message)
 
   def test_reportConfigChange(self):
     pass

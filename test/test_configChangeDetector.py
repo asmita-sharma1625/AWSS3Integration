@@ -2,6 +2,7 @@ import unittest
 from configManager import configChangeNotifier
 import ConfigParser
 import os
+import filecmp
 
 class TestConfigChangeDetector(unittest.TestCase):
 
@@ -28,22 +29,18 @@ class TestConfigChangeDetector(unittest.TestCase):
     if os.path.exists(self.CONF_FILE_2):
       os.remove(self.CONF_FILE_2)
 
-  def test_compareSection_noDiff(self):
-    self.assertFalse(self.configChangeDetector.compareSection("demo_section_2"))
+  def test_compare_noDiff(self):
+    self.assertEquals(filecmp.cmp(self.CONF_FILE_1, self.CONF_FILE_1), self.configChangeDetector.compareConfig())
 
-  def test_compareSection_diff(self):
-    self.addToConfig(self.CONF_FILE_2, self.config2, "demo_section_1", "demo_key_2", "demo_value_2")
-    self.configChangeDetector = configChangeNotifier.ConfigChangeDetector(self.CONF_FILE_1, self.CONF_FILE_2)
-    self.assertTrue(self.configChangeDetector.compareSection("demo_section_1"))
-
-  def test_compareConfig_noDiff(self):
-    self.assertFalse(self.configChangeDetector.compareConfig())
-
+  def test_compare_diff(self):
+    self.assertEquals(filecmp.cmp(self.CONF_FILE_1, self.CONF_FILE_2), self.configChangeDetector.compareConfig())
+  
+  '''
   def test_compareConfig_diff(self):
     self.addToConfig(self.CONF_FILE_2, self.config2, "demo_section_3", "demo_key_1", "demo_value_1")
     self.configChangeDetector = configChangeNotifier.ConfigChangeDetector(self.CONF_FILE_1, self.CONF_FILE_2)
     self.assertTrue(self.configChangeDetector.compareConfig())
-
+  '''
   def create_Config(self, confile, config):
     self.addToConfig(confile, config, "demo_section_1", "demo_key_1", "demo_value_1")
     self.addToConfig(confile, config, "demo_section_2", "demo_key_1", "demo_value_1")
