@@ -16,6 +16,8 @@ class Helper:
   
   @staticmethod
   def copyConfig(srcpath, destpath):
+    if not os.path.exists(os.path.dirname(destpath)):
+      os.makedirs(os.path.dirname(destpath))
     os.system("cp " + srcpath + " " + destpath)
 
   @staticmethod

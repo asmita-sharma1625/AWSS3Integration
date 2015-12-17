@@ -1,6 +1,7 @@
 import boto3
-import sys
+import sys, os
 import logging
+import traceback 
 
 logger = logging.getLogger("s3Integration")
 
@@ -20,14 +21,19 @@ class S3Dao:
     self.bucket = bucket_name 
 
   def downloadObject(self, key, pathname, bucket_name = None):
+    print "pathname =======", pathname
     if bucket_name == None:
       bucket_name = self.bucket
     try:
       s3object = self.getObjectIfExists(key, bucket_name)
+      print "dirname ====", os.path.dirname(pathname)
+      if not os.path.exists(os.path.dirname(pathname)):
+        print "dirname ====", os.path.dirname(pathname)
+        os.makedirs(os.path.dirname(pathname))
       s3object.download_file(pathname)   
     except:
       logger.error("Cannot download object to file " + pathname + " from bucket " + bucket_name + " having key " + key)     
-      raise Exception("Cannot download object to file " + pathname + " from bucket " + bucket_name + " having key " + key)
+      raise Exception("Cannot download object to file " + pathname + " from bucket " + bucket_name + " having key " + key + traceback.format_exc())
 
   def uploadObject(self, key, pathname, bucket_name = None):
     if bucket_name == None:

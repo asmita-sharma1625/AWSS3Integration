@@ -14,7 +14,7 @@ class ConfigManager:
     self.SECTION = "Manager"
     self.CONF_DIR = "ConfDir"#"/tmp"
     self.MAIL_SERVER = "mailServer"#"smtp.mail.yahoo.com"
-    self.MAIL_SENDER = "mailSender"#"s3.notifier@yahoo.com"
+    self.MAIL_SENDER = "mailSender"#"s3notifier@yahoo.com"
     self.MAIL_PASSWORD = "mailPassword"#"jio@1234"
     self.MAIL_RECEIVER = "mailReceiver"#"itsmeasmi25@gmail.com"
     self.MAIL_SUBJECT = "mailSubject"#"JCS_Config_Change_Notification"
@@ -31,32 +31,37 @@ class ConfigManager:
   def reportAllConfigChange(self):
     objects = self.getAllS3Objects()
     for obj in objects:
-      self.reportOrApplyConfigChange(obj)      
+      if not obj.endswith("/"):
+        self.reportOrApplyConfigChange(obj)      
 
   def reportOrApplyConfigChange(self, objectKey, apply_flag = False):
-    newConfig = "/tmp/newConfig.conf"
+    newConfig = os.path.join("/tmp/new" , objectKey)
     self.getS3Object(objectKey, newConfig)
     try:
-      OLD_CONFIG_PATH = self.getConfigPath(objectKey)
+      OLD_CONFIG_PATH = objectKey #self.getConfigPath(objectKey)
       OLD_CONFIG_NODE = self.getConfigNode(objectKey)
     except Exception:
       logger.error("Config corresponding to s3 object - " + objectKey + " not found")
       return
-    oldConfig = "/tmp/oldConfig.conf"
+    oldConfig = os.path.join("/tmp/old" , objectKey)
     self.getConfig(OLD_CONFIG_NODE, OLD_CONFIG_PATH, oldConfig)
     configChangeDetector = configChangeNotifier.ConfigChangeDetector(oldConfig, newConfig)
     print "before check****"
-    if not configChangeDetector.compareConfig():
-      config_diff = configChangeDetector.getDiff()
-      print "config_diff : ", open(config_diff, 'r').readlines()
-      ''' notify any change to registered user along 
+    try:
+      if not configChangeDetector.compareConfig():
+        config_diff = configChangeDetector.getDiff()
+        print "config_diff : ", open(config_diff, 'r').readlines()
+        ''' notify any change to registered user along 
           with objectKey and diff files if apply_flag is False 
           else apply the change on the related node'''
-      if apply_flag:
-        self.applyChange(newConfig, OLD_CONFIG_NODE, OLD_CONFIG_PATH)
-      else:
-        '''call mail server to send notification with diff files and objectKey and old config node and path.'''
-        self.notifyConfigChange(objectKey, config_diff)
+        if apply_flag:
+          self.applyChange(newConfig, OLD_CONFIG_NODE, OLD_CONFIG_PATH)
+        else:
+          '''call mail server to send notification with diff files and objectKey and old config node and path.'''
+          self.notifyConfigChange(objectKey, config_diff)
+    except OSError as error:
+      print "no file corresponding to object key ", objectKey
+      pass
 
   def getAllS3Objects(self):
     return self.s3Dao.getAllObjects()
@@ -65,12 +70,17 @@ class ConfigManager:
     self.s3Dao.downloadObject(objectKey, newConfig)
 
   def getConfigPath(self, objectKey):
+    print "object key ----", objectKey
     return helper.Helper.mapToPath(objectKey)
 
   def getConfigNode(self, objectKey):
+    print "object key ----", objectKey
     return helper.Helper.mapToNode(objectKey)
 
   def getConfig(self, node, src_path, dest_path = None):
+    print "node -----", node
+    print "src path ----", src_path
+    print "dest_path ----", dest_path
     return helper.Helper.copyConfig(os.path.join(self.configReader.getValue(self.SECTION, self.CONF_DIR), src_path), dest_path)
     #return helper.Helper.copyConfigFromRemote(node, src_path, dest_path)
     
@@ -89,3 +99,9 @@ class ConfigManager:
     mail.sendMessage(receiver, subject, text)
     return subject + "\001" + text
 
+import sys
+if len( sys.argv) < 2:
+  print "Config File path required"
+  sys.exit(-1)
+configManager = ConfigManager(sys.argv[1])
+configManager.reportAllConfigChange()

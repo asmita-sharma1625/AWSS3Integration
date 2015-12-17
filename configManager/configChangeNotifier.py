@@ -14,6 +14,8 @@ class ConfigChangeDetector:
   '''
   
   def __init__(self, oldConfig, newConfig):
+    print "oldconfig ------", oldConfig
+    print "newconfig ------", newConfig
     self.oldConfig = oldConfig
     self.newConfig = newConfig
     self.diff = "/tmp/config_diff.conf"
@@ -44,7 +46,7 @@ class ConfigChangeDetector:
     if flag is True:
       return True
     fp = open(self.diff, "w")
-    for line in difflib.unified_diff(open(self.newConfig).readlines(), open(self.oldConfig).readlines(), self.newConfig, self.oldConfig):
+    for line in difflib.unified_diff(open(self.oldConfig).readlines(), open(self.newConfig).readlines(), self.oldConfig, self.newConfig):
       fp.write(line)
     fp.close()
     return False
