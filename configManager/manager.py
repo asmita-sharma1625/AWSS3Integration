@@ -12,13 +12,13 @@ class ConfigManager:
 
   def __init__(self, config_file):
     self.SECTION = "Manager"
-    self.CONF_DIR = "ConfDir"#"/tmp"
-    self.MAIL_SERVER = "mailServer"#"smtp.mail.yahoo.com"
-    self.MAIL_SENDER = "mailSender"#"s3notifier@yahoo.com"
-    self.MAIL_PASSWORD = "mailPassword"#"jio@1234"
-    self.MAIL_RECEIVER = "mailReceiver"#"itsmeasmi25@gmail.com"
+    self.CONF_DIR = "ConfDir"
+    self.MAIL_SERVER = "mailServer"
+    self.MAIL_SENDER = "mailSender"
+    self.MAIL_PASSWORD = "mailPassword"
+    self.MAIL_RECEIVER = "mailReceiver"
     self.MAIL_SUBJECT = "mailSubject"#"JCS_Config_Change_Notification"
-    self.BUCKET = "s3Bucket"#"compute-config"
+    self.BUCKET = "s3Bucket"
     
     try:
       self.configReader = configReader.ConfigReader(config_file)#("/tmp/Config_Manager_config.conf")
