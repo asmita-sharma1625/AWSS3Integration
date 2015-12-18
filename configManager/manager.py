@@ -100,8 +100,9 @@ class ConfigManager:
     return subject + "\001" + text
 
 import sys
-if len( sys.argv) < 2:
-  print "Config File path required"
-  sys.exit(-1)
-configManager = ConfigManager(sys.argv[1])
-configManager.reportAllConfigChange()
+if __name__ == '__main__':
+  if len( sys.argv) < 2:
+    print "Config File path required"
+    sys.exit(-1)
+  configManager = ConfigManager(sys.argv[1])
+  configManager.reportAllConfigChange()

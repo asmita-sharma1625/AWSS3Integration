@@ -2,12 +2,15 @@ import smtplib
 from email.mime.text import MIMEText
 import logging
 import traceback
+import socks
 
 logger = logging.getLogger("s3Integration")
 
 class MailServer:
 
   def __init__(self, server, sender, password):
+    socks.setdefaultproxy(socks.PROXY_TYPE_HTTP, '10.140.12.10', 3128)
+    socks.wrapmodule(smtplib)
     self.server = server
     self.sender = sender
     self.password = password 
