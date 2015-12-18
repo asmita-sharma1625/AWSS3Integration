@@ -17,6 +17,8 @@ class ConfigManager:
     self.MAIL_SENDER = "mailSender"
     self.MAIL_PASSWORD = "mailPassword"
     self.MAIL_RECEIVER = "mailReceiver"
+    self.HTTP_PROXY_ADDR = "http-proxy-addr"
+    self.HTTP_PROXY_PORT = "http-proxy-port"
     self.MAIL_SUBJECT = "mailSubject"#"JCS_Config_Change_Notification"
     self.BUCKET = "s3Bucket"
     
@@ -92,10 +94,12 @@ class ConfigManager:
     sender = self.configReader.getValue(self.SECTION, self.MAIL_SENDER)
     password = self.configReader.getValue(self.SECTION, self.MAIL_PASSWORD)
     receiver = self.configReader.getValue(self.SECTION, self.MAIL_RECEIVER)
+    http_proxy_addr = self.configReader.getValue(self.SECTION, self.HTTP_PROXY_ADDR)
+    http_proxy_port = self.configReader.getValue(self.SECTION, self.HTTP_PROXY_PORT)
     subject = self.configReader.getValue(self.SECTION, self.MAIL_SUBJECT) + ":S3 Object Key:" + objectKey 
     text = helper.Helper.getFileContents(ConfigDiff)
     
-    mail = mailServer.MailServer(server, sender, password)
+    mail = mailServer.MailServer(server, sender, password, http_proxy_addr, http_proxy_port)
     mail.sendMessage(receiver, subject, text)
     return subject + "\001" + text
 

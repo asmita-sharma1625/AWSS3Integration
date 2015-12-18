@@ -8,8 +8,8 @@ logger = logging.getLogger("s3Integration")
 
 class MailServer:
 
-  def __init__(self, server, sender, password):
-    socks.setdefaultproxy(socks.PROXY_TYPE_HTTP, '10.140.12.10', 3128)
+  def __init__(self, server, sender, password, http_proxy_addr, http_proxy_port):
+    socks.setdefaultproxy(socks.PROXY_TYPE_HTTP, http_proxy_addr, int(http_proxy_port))
     socks.wrapmodule(smtplib)
     self.server = server
     self.sender = sender
